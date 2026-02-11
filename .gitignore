@@ -9,3 +9,16 @@ wheels/
 # Virtual environments
 .venv
 .env
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env
+.env
+
+# Qdrant local storage
+qdrant_storage/
+
+# OS
+.DS_Store
