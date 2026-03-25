@@ -45,7 +45,7 @@ A production-ready RAG system that enables you to upload PDF documents, ingest t
 
 ## Prerequisites
 
-- Python 3.14+
+- Python 3.11.10+
 - [Qdrant](https://qdrant.tech/documentation/quick-start/) running locally (default: `http://localhost:6333`)
 - [Ollama](https://ollama.com/) running locally with `nomic-embed-text` model
 - [Inngest Dev Server](https://www.inngest.com/docs/local) running (default: `http://127.0.0.1:8288`)
