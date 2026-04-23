@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
@@ -12,6 +13,17 @@ class QdrantStorage:
         self.collection = collection
 
         # Create collection only if it doesn't already exist
+=======
+from qdrant_client import QdrantClient
+from qdrant_client.models import VectorParams, Distance, PointStruct
+
+class QdrantStorage:
+    def __init__(self, url="http://localhost:6333", collection="docs", dim=768):
+        self.client = QdrantClient(url=url, timeout=30)
+        self.collection = collection
+
+        # ✅ Create ONLY if it doesn't exist
+>>>>>>> 790b281 (Finalisation of RAG project)
         if not self.client.collection_exists(self.collection):
             self.client.create_collection(
                 collection_name=self.collection,
@@ -21,6 +33,7 @@ class QdrantStorage:
                 ),
             )
 
+<<<<<<< HEAD
     def upsert(self, ids: list, vectors: list, payloads: list) -> None:
         points = [
             PointStruct(id=ids[i], vector=vectors[i], payload=payloads[i])
@@ -29,15 +42,40 @@ class QdrantStorage:
         self.client.upsert(collection_name=self.collection, points=points)
 
     def search(self, query_vector: list[float], top_k: int = 5) -> dict:
+=======
+    def upsert(self, ids, vectors, payloads):
+        points = [
+            PointStruct(
+                id=ids[i],
+                vector=vectors[i],
+                payload=payloads[i]
+            )
+            for i in range(len(ids))
+        ]
+        self.client.upsert(
+            collection_name=self.collection,
+            points=points
+        )
+
+    def search(self, query_vector, top_k: int = 5):
+>>>>>>> 790b281 (Finalisation of RAG project)
         results = self.client.query_points(
             collection_name=self.collection,
             query=query_vector,
             with_payload=True,
+<<<<<<< HEAD
             limit=top_k,
         ).points
 
         contexts: list[str] = []
         sources: set[str] = set()
+=======
+            limit=top_k
+        ).points
+
+        contexts = []
+        sources = set()
+>>>>>>> 790b281 (Finalisation of RAG project)
 
         for r in results:
             payload = r.payload or {}
@@ -47,4 +85,11 @@ class QdrantStorage:
                 contexts.append(text)
                 sources.add(source)
 
+<<<<<<< HEAD
         return {"contexts": contexts, "sources": list(sources)}
+=======
+        return {"contexts": contexts, "sources": list(sources)}
+
+
+    
+>>>>>>> 790b281 (Finalisation of RAG project)
