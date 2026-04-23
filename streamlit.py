@@ -1,3 +1,6 @@
+import nest_asyncio
+nest_asyncio.apply()  # Allow asyncio.run() inside Streamlit's Tornado event loop
+
 import asyncio
 from pathlib import Path
 import time
