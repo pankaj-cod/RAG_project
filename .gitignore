@@ -22,3 +22,4 @@ qdrant_storage/
 
 # OS
 .DS_Store
+DEPLOYMENT_FIXES.md
