@@ -25,14 +25,30 @@ def save_uploaded_pdf(file) -> Path:
 
 
 def ingest_pdf(pdf_path: Path, source_id: str) -> int:
-    """Chunk → embed → upsert into Qdrant. Returns number of chunks stored."""
+    """Chunk → embed → upsert into Qdrant in batches to avoid OOM."""
     chunks = load_and_chunk_pdf(str(pdf_path))
     if not chunks:
         return 0
-    vecs = embed_texts(chunks)
-    ids = [str(uuid.uuid5(uuid.NAMESPACE_URL, f"{source_id}:{i}")) for i in range(len(chunks))]
-    payloads = [{"source": source_id, "text": chunks[i]} for i in range(len(chunks))]
-    QdrantStorage().upsert(ids, vecs, payloads)
+        
+    storage = QdrantStorage()
+    batch_size = 100
+    
+    for i in range(0, len(chunks), batch_size):
+        batch_chunks = chunks[i : i + batch_size]
+        vecs = embed_texts(batch_chunks)
+        
+        # Calculate global indices for UUID generation
+        ids = [
+            str(uuid.uuid5(uuid.NAMESPACE_URL, f"{source_id}:{i + j}"))
+            for j in range(len(batch_chunks))
+        ]
+        payloads = [
+            {"source": source_id, "text": batch_chunks[j]}
+            for j in range(len(batch_chunks))
+        ]
+        
+        storage.upsert(ids, vecs, payloads)
+        
     return len(chunks)
 
 
