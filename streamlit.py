@@ -49,7 +49,17 @@ def query_pdf(question: str, top_k: int = 5) -> dict:
         "Answer concisely using the context above."
     )
 
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        try:
+            api_key = st.secrets.get("GROQ_API_KEY")
+        except FileNotFoundError:
+            pass
+            
+    if not api_key:
+        raise ValueError("GROQ_API_KEY is missing! Please set it in Streamlit Cloud Secrets or your .env file.")
+        
+    client = Groq(api_key=api_key)
     res = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
