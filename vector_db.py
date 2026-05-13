@@ -5,10 +5,15 @@ from qdrant_client.models import VectorParams, Distance, PointStruct
 
 class QdrantStorage:
     def __init__(self, collection: str = "docs", dim: int = 768):
-        url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        url = os.getenv("QDRANT_URL")
         api_key = os.getenv("QDRANT_API_KEY")  # None for local, required for Qdrant Cloud
 
-        self.client = QdrantClient(url=url, api_key=api_key, timeout=30)
+        if url:
+            self.client = QdrantClient(url=url, api_key=api_key, timeout=30)
+        else:
+            # Fallback to local directory if no URL is provided (e.g., Streamlit Cloud)
+            self.client = QdrantClient(path="qdrant_storage")
+            
         self.collection = collection
 
         # Create collection only if it doesn't already exist
